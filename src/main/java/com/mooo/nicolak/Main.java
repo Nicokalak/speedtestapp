@@ -56,8 +56,8 @@ public class Main {
 
     private static Options getAppOpts() {
         Options options = new Options();
-        options.addOption("f","stats-file", false, "statistics file");
-        options.addOption("l","link", false, "custom link for test");
+        options.addOption("f","stats-file", true, "statistics file");
+        options.addOption("l","link", true, "custom link for test");
 
         return options;
 
