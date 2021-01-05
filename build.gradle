@@ -18,6 +18,9 @@ dependencies {
 
 jar {
     archiveBaseName = 'myspeedtest'
+    from {
+        configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
+    }
     manifest {
         attributes(
                 'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
