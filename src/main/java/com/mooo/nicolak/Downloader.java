@@ -56,12 +56,12 @@ public class Downloader implements Runnable{
 
     public Double getMBPerSec() {
         OptionalDouble average = speed.values().stream().mapToLong(this::bytesToMB).average();
-        return (double) ((((int) (average.orElse(0) * 100)) / 100));
+        return average.orElse(0);
     }
 
     @Override
     public String toString() {
-        return String.format("Dowloaded %sMB in %s seconds in %s MB/s", totalMB, totalTimeSec, getMBPerSec());
+        return String.format("Dowloaded %sMB in %s seconds in %.2f MB/s", totalMB, totalTimeSec, getMBPerSec());
     }
 
     private long bytesToMB(long bytes) {

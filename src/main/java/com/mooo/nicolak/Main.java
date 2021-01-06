@@ -26,7 +26,7 @@ public class Main {
             Thread t = new Thread(downloader);
             t.start();
             while (t.isAlive()) {
-                String mbPerSec = String.valueOf(downloader.getMBPerSec() + " MB/s");
+                String mbPerSec = String.format("%.2f MB/s", downloader.getMBPerSec());
                 System.out.print(mbPerSec);
                 Thread.sleep(500);
                 for (int x = 0; x < mbPerSec.length(); x++) {
@@ -41,7 +41,7 @@ public class Main {
                     stats.createNewFile();
                 }
                 FileUtils.writeStringToFile(stats,
-                        String.format("%d %f",System.currentTimeMillis() ,downloader.getMBPerSec()),
+                        String.format("%d %.2f\n",System.currentTimeMillis() ,downloader.getMBPerSec()),
                         Charset.defaultCharset(),
                         true);
             }
