@@ -1,39 +1,43 @@
 package com.mooo.nicolak;
 
 import java.io.BufferedInputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.Map;
-import java.util.OptionalDouble;
+import java.net.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 public class Downloader implements Runnable{
-    private final String link;
-    final static int KB = 1024;
-    final static int MB = 1024*KB;
+    private final Set<URL> links;
     final Map<Long, Long> speed;
     private long totalTimeSec;
     private long totalMB;
 
-
-    public Downloader(String link) {
-        this.link = link;
+    protected Downloader() {
+        links = new HashSet<>();
         speed = new ConcurrentHashMap<>();
+
+    }
+    public Downloader(String link) throws MalformedURLException {
+        this(new URL(link));
+    }
+
+    public Downloader(URL link) {
+        this();
+        this.links.add(link);
     }
 
     @Override
     public void run() {
         long start = System.currentTimeMillis();
         try {
-            URL url = new URL(link);
-            HttpURLConnection httpConnection = (HttpURLConnection) (url.openConnection());
+            URL url = links.iterator().next();
+            URLConnection httpConnection = url.openConnection();
             long completeFileSize = httpConnection.getContentLength();
             BufferedInputStream in = new java.io.BufferedInputStream(httpConnection.getInputStream());
-            byte[] buff = new byte[MB];
+            byte[] buff = new byte[Consts.MB_IN_BYTES];
             long downloadedFileSize = 0;
-            int x = 0;
-            while ((x = in.read(buff, 0, MB)) >= 0) {
+            int x;
+            while ((x = in.read(buff, 0, Consts.MB_IN_BYTES)) >= 0) {
                 downloadedFileSize += x;
                 countBytes(x);
             }
@@ -65,6 +69,6 @@ public class Downloader implements Runnable{
     }
 
     private long bytesToMB(long bytes) {
-     return (long) ((float)bytes / (float)MB);
+     return (long) ((float)bytes / (float)Consts.MB_IN_BYTES);
     }
 }
