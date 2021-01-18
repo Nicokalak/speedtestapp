@@ -1,15 +1,11 @@
 import com.mooo.nicolak.Consts;
-import org.apache.commons.io.IOUtils;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
-import java.util.Arrays;
 import java.util.Random;
 
 public class URLMock {
@@ -75,12 +71,12 @@ public class URLMock {
         }
 
         @Override
-        public int read() throws IOException {
+        public int read() {
             throw new NotImplementedException();
         }
 
         @Override
-        public synchronized int read(byte[] b, int off, int len) throws IOException {
+        public synchronized int read(byte[] b, int off, int len) {
             int readCount = 0;
             if (firstReadTime == null) {
                 firstReadTime = System.currentTimeMillis();
