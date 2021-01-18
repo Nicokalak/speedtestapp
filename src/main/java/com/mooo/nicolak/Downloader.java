@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
 public class Downloader implements Runnable{
     private final Set<URL> links;
     final Map<Long, Long> speed;
-    private long totalTimeSec;
+    private Double totalTimeSec;
     private long totalMB;
 
     protected Downloader() {
@@ -28,7 +28,6 @@ public class Downloader implements Runnable{
 
     @Override
     public void run() {
-        long start = System.currentTimeMillis();
         try {
             URL url = links.iterator().next();
             URLConnection httpConnection = url.openConnection();
@@ -37,16 +36,17 @@ public class Downloader implements Runnable{
             byte[] buff = new byte[Consts.MB_IN_BYTES];
             long downloadedFileSize = 0;
             int x;
+            long start = System.currentTimeMillis();
             while ((x = in.read(buff, 0, Consts.MB_IN_BYTES)) >= 0) {
                 downloadedFileSize += x;
                 countBytes(x);
             }
+            totalTimeSec = ((double)(System.currentTimeMillis() - start))/ 1000.00;
             totalMB = bytesToMB(downloadedFileSize);
             in.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        totalTimeSec = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start);
     }
 
     private void countBytes(long downloadedFileSize) {
@@ -65,7 +65,7 @@ public class Downloader implements Runnable{
 
     @Override
     public String toString() {
-        return String.format("Dowloaded %sMB in %s seconds in %.2f MB/s", totalMB, totalTimeSec, getMBPerSec());
+        return String.format("Dowloaded %sMB in %.2f seconds in %.2f MB/s", totalMB, totalTimeSec, getMBPerSec());
     }
 
     private long bytesToMB(long bytes) {
