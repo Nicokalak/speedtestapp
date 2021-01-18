@@ -90,7 +90,7 @@ public class URLMock {
                 return -1;
             }
 
-            for (int i = off; i < len && readIdx < this.buff.length; i++ ) {
+            for (int i = off; i < len && readIdx < this.buff.length; i++) {
                 b[i] = this.buff[readIdx++];
                 readCount++;
             }
