@@ -9,9 +9,9 @@ public class MainTests {
     @Test()
     public void noParamsTest() throws InterruptedException {
         Downloader downloader = mock(Downloader.class);
-        App.setDownloader(downloader);
         doNothing().when(downloader).run();
         App app = new App();
+        app.setDownloader(downloader);
         Assert.assertEquals(Downloader.RUN_OK, app.runApp());
     }
 

@@ -11,7 +11,7 @@ public class DownloaderTest {
 
     @Test( expected = MalformedURLException.class)
     public void BadURLTest() throws MalformedURLException {
-        DefaultDownloader d = new DefaultDownloader();
+        Downloader d = new DefaultDownloader();
         d.setHref("http://goodurl.com");
         d.setHref("blablabla");
     }
@@ -22,7 +22,7 @@ public class DownloaderTest {
     }
     @Test()
     public void SpeedTest() throws MalformedURLException {
-        DefaultDownloader d = new DefaultDownloader("testurl://thisistest");
+        Downloader d = new DefaultDownloader("testurl://thisistest");
         d.run();
         Assert.assertEquals(Double.valueOf(1.5), d.getMBPerSec());
         Assert.assertTrue(d.toString().contains(String.format("%.2f MB/s", d.getMBPerSec())));
@@ -30,7 +30,7 @@ public class DownloaderTest {
 
     @Test()
     public void IOErrorTest() throws MalformedURLException {
-        DefaultDownloader d = new DefaultDownloader("testurl://throwIO");
+        Downloader d = new DefaultDownloader("testurl://throwIO");
         d.run();
         Assert.assertEquals(Downloader.RUN_UNEXPECTED_ERROR, d.getDownloadStatus());
     }

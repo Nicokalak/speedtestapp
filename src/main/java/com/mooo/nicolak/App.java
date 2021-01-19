@@ -12,13 +12,13 @@ import java.util.Optional;
 
 public class App {
     public final static String DEFAULT = "https://nicokalak.files.wordpress.com/2020/12/out.key";
-    private static Downloader downloader = new DefaultDownloader();
+    private Downloader downloader = new DefaultDownloader();
 
     public static void main(String[] args) throws InterruptedException {
         App app = new App();
         System.exit(app.runApp(args));
     }
-    
+
     public int runApp(String... args) throws InterruptedException {
         // create the parser
         CommandLineParser parser = new DefaultParser();
@@ -70,7 +70,7 @@ public class App {
 
     }
 
-    public static void setDownloader(Downloader d) {
-        App.downloader = d;
+    public void setDownloader(Downloader d) {
+        this.downloader = d;
     }
 }
