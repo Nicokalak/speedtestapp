@@ -18,6 +18,7 @@ public class App {
         App app = new App();
         System.exit(app.runApp(args));
     }
+    
     public int runApp(String... args) throws InterruptedException {
         // create the parser
         CommandLineParser parser = new DefaultParser();
