@@ -1,35 +1,39 @@
-package com.mooo.nicolak;
+package com.mooo.nicolak.downloaders;
+
+import com.mooo.nicolak.Consts;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
-public class Downloader implements Runnable{
-    private final Set<URL> links;
-    final Map<Long, Long> speed;
+public class DefaultDownloader implements Downloader {
+    private URL href;
+    private final Map<Long, Long> speed;
     private Double totalTimeSec;
+    private int downloadStatus;
     private long totalMB;
 
-    protected Downloader() {
-        links = new HashSet<>();
+    public DefaultDownloader() {
         speed = new ConcurrentHashMap<>();
+        downloadStatus = RUN_OK;
 
     }
-    public Downloader(String link) throws MalformedURLException {
-        this(new URL(link));
+    public DefaultDownloader(String href) throws MalformedURLException {
+        this(new URL(href));
     }
 
-    public Downloader(URL link) {
+    public DefaultDownloader(URL href) {
         this();
-        this.links.add(link);
+        this.href = href;
     }
 
     @Override
     public void run() {
         try {
-            URL url = links.iterator().next();
+            URL url = this.href;
             URLConnection httpConnection = url.openConnection();
             long completeFileSize = httpConnection.getContentLength();
             BufferedInputStream in = new java.io.BufferedInputStream(httpConnection.getInputStream());
@@ -44,8 +48,9 @@ public class Downloader implements Runnable{
             totalTimeSec = ((double)(System.currentTimeMillis() - start))/ 1000.00;
             totalMB = bytesToMB(downloadedFileSize);
             in.close();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
+            this.downloadStatus = Downloader.RUN_UNEXPECTED_ERROR;
         }
     }
 
@@ -58,6 +63,7 @@ public class Downloader implements Runnable{
         }
     }
 
+    @Override
     public Double getMBPerSec() {
         OptionalDouble average = speed.values().stream().mapToLong(this::bytesToMB).average();
         return average.orElse(0);
@@ -65,10 +71,25 @@ public class Downloader implements Runnable{
 
     @Override
     public String toString() {
-        return String.format("Dowloaded %sMB in %.2f seconds in %.2f MB/s", totalMB, totalTimeSec, getMBPerSec());
+        return String.format("Downloaded %sMB in %.2f seconds in %.2f MB/s, status = %s",
+                totalMB,
+                totalTimeSec,
+                getMBPerSec(),
+                (downloadStatus == RUN_OK ?  "ok" : "incomplete"));
     }
 
     private long bytesToMB(long bytes) {
      return (long) ((float)bytes / (float)Consts.MB_IN_BYTES);
+    }
+
+
+    @Override
+    public int getDownloadStatus() {
+        return downloadStatus;
+    }
+
+    @Override
+    public void setHref(String href) throws MalformedURLException {
+        this.href = new URL(href);
     }
 }

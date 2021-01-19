@@ -1,6 +1,7 @@
 import com.mooo.nicolak.Consts;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
@@ -23,7 +24,10 @@ public class URLMock {
         }
 
         @Override
-        public InputStream getInputStream() {
+        public InputStream getInputStream() throws IOException {
+            if (getURL().toString().contains("throwIO")) {
+                throw new IOException();
+            }
             Random r = new Random();
             byte[] bytes = new byte[getContentLength()];
             r.nextBytes(bytes);

@@ -1,5 +1,7 @@
 package com.mooo.nicolak;
 
+import com.mooo.nicolak.downloaders.DefaultDownloader;
+import com.mooo.nicolak.downloaders.Downloader;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 
@@ -8,21 +10,23 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Optional;
 
-public class Main {
-    final static String DEFAULT = "https://nicokalak.files.wordpress.com/2020/12/out.key";
-
+public class App {
+    public final static String DEFAULT = "https://nicokalak.files.wordpress.com/2020/12/out.key";
+    private static Downloader downloader = new DefaultDownloader();
 
     public static void main(String[] args) throws InterruptedException {
-
+        App app = new App();
+        System.exit(app.runApp(args));
+    }
+    public int runApp(String... args) throws InterruptedException {
         // create the parser
         CommandLineParser parser = new DefaultParser();
         try {
             // parse the command line arguments
             CommandLine line = parser.parse(getAppOpts(), args);
 
-
-            String link = Optional.ofNullable(line.getOptionValue("l")).orElse(DEFAULT);
-            Downloader downloader = new Downloader(link);
+            String href = Optional.ofNullable(line.getOptionValue("h")).orElse(DEFAULT);
+            downloader.setHref(href);
             Thread t = new Thread(downloader);
             t.start();
             while (t.isAlive()) {
@@ -52,14 +56,20 @@ public class Main {
         } catch (IOException ioe) {
             System.err.println("failed to write stats.  Reason: " + ioe.getMessage());
         }
+
+        return downloader.getDownloadStatus();
     }
 
     private static Options getAppOpts() {
         Options options = new Options();
         options.addOption("f","stats-file", true, "statistics file");
-        options.addOption("l","link", true, "custom link for test");
+        options.addOption("h","href", true, "custom link for test");
 
         return options;
 
+    }
+
+    public static void setDownloader(Downloader d) {
+        App.downloader = d;
     }
 }
