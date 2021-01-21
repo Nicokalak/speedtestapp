@@ -10,10 +10,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class UrlConfig {
-    //private String confUrl = "https://www.speedtest.net/speedtest-config.php";
-    private String confUrl = "http://obik.mooo.com/speedtest.xml";
-    //private String servers = "http://c.speedtest.net/speedtest-servers-static.php";
-    private String servers = "http://obik.mooo.com/speedtest-servers.xml";
+    private String confUrl;
+    private String servers;
 
     public enum UrlPaths {
         x2000("http://%s/speedtest/random2000x2000.jpg?x=%d"),
@@ -34,7 +32,8 @@ public class UrlConfig {
     }
 
     public UrlConfig() {
-
+        confUrl = "https://www.speedtest.net/speedtest-config.php";
+        servers = "http://c.speedtest.net/speedtest-servers-static.php";
     }
 
     public UrlConfig(String confUrl, String serversUrl) {

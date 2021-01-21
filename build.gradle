@@ -27,7 +27,7 @@ dependencies {
 jar {
     archiveBaseName.set('myspeedtest')
     manifest {
-      attributes 'Main-Class': 'com.mooo.nicolak.Main'
+      attributes 'Main-Class': 'com.mooo.nicolak.App'
     }
 
     from {
