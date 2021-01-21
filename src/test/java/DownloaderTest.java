@@ -6,14 +6,15 @@ import org.junit.Test;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 
 public class DownloaderTest {
 
     @Test( expected = MalformedURLException.class)
     public void BadURLTest() throws MalformedURLException {
         Downloader d = new DefaultDownloader();
-        d.setHref("http://goodurl.com");
-        d.setHref("blablabla");
+        d.setHref(Collections.singletonList("http://goodurl.com"));
+        d.setHref(Collections.singletonList("blablabla"));
     }
 
     @BeforeClass

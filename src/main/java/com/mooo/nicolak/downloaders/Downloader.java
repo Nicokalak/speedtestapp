@@ -1,6 +1,7 @@
 package com.mooo.nicolak.downloaders;
 
 import java.net.MalformedURLException;
+import java.util.Collection;
 
 public interface Downloader extends Runnable {
     int RUN_OK = 0;
@@ -14,5 +15,5 @@ public interface Downloader extends Runnable {
 
     int getDownloadStatus();
 
-    void setHref(String href) throws MalformedURLException;
+    void setHref(Collection<String> href) throws MalformedURLException;
 }

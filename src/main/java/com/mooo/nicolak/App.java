@@ -2,13 +2,14 @@ package com.mooo.nicolak;
 
 import com.mooo.nicolak.downloaders.DefaultDownloader;
 import com.mooo.nicolak.downloaders.Downloader;
+import com.mooo.nicolak.downloaders.MultiDownloader;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Optional;
+import java.util.*;
 
 public class App {
     public final static String DEFAULT = "https://nicokalak.files.wordpress.com/2020/12/out.key";
@@ -26,8 +27,29 @@ public class App {
             // parse the command line arguments
             CommandLine line = parser.parse(getAppOpts(), args);
 
-            String href = Optional.ofNullable(line.getOptionValue("h")).orElse(DEFAULT);
-            downloader.setHref(href);
+            if (line.hasOption("p")) {
+                downloader = new MultiDownloader();
+                List<testServer> serversConfig = new UrlConfig().getServerConfiguration();
+
+                SortedSet<testServer.TestResult> ttlResults = new TreeSet<>();
+                serversConfig.parallelStream().forEach((val) -> {
+                    testServer.TestResult res = val.testServerTTL();
+                    synchronized (ttlResults) {
+                        ttlResults.add(res);
+                    }
+                });
+
+                testServer bestServer = ttlResults.first().getServer();
+                Collection<String> URLs = new ArrayList<>();
+
+                for (UrlConfig.UrlPaths urlPath : UrlConfig.UrlPaths.values()) {
+                    URLs.add(urlPath.getUrl(bestServer.getHost()));
+                }
+                downloader.setHref(URLs);
+            } else {
+                String href = Optional.ofNullable(line.getOptionValue("h")).orElse(DEFAULT);
+                downloader.setHref(Collections.singletonList(href));
+            }
             Thread t = new Thread(downloader);
             t.start();
             while (t.isAlive()) {
@@ -56,6 +78,8 @@ public class App {
             System.err.println("Parsing failed.  Reason: " + exp.getMessage());
         } catch (IOException ioe) {
             System.err.println("failed to write stats.  Reason: " + ioe.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return downloader.getDownloadStatus();
@@ -65,6 +89,7 @@ public class App {
         Options options = new Options();
         options.addOption("f","stats-file", true, "statistics file");
         options.addOption("h","href", true, "custom link for test");
+        options.addOption("p","parallel", false, "Running parallel test");
 
         return options;
 

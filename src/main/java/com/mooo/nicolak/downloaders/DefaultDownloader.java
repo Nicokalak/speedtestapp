@@ -18,7 +18,7 @@ public class DefaultDownloader implements Downloader {
 
     public DefaultDownloader() {
         speed = new ConcurrentHashMap<>();
-        downloadStatus = RUN_OK;
+        downloadStatus = RUN_INCOMPLETE;
 
     }
     public DefaultDownloader(String href) throws MalformedURLException {
@@ -48,6 +48,7 @@ public class DefaultDownloader implements Downloader {
             totalTimeSec = ((double)(System.currentTimeMillis() - start))/ 1000.00;
             totalMB = bytesToMB(downloadedFileSize);
             in.close();
+            this.downloadStatus = RUN_OK;
         } catch (IOException e) {
             e.printStackTrace();
             this.downloadStatus = Downloader.RUN_UNEXPECTED_ERROR;
@@ -71,7 +72,8 @@ public class DefaultDownloader implements Downloader {
 
     @Override
     public String toString() {
-        return String.format("Downloaded %sMB in %.2f seconds in %.2f MB/s, status = %s",
+        return String.format("Downloaded %sMB from %s in %.2f seconds in %.2f MB/s, status = %s",
+                href,
                 totalMB,
                 totalTimeSec,
                 getMBPerSec(),
@@ -89,7 +91,7 @@ public class DefaultDownloader implements Downloader {
     }
 
     @Override
-    public void setHref(String href) throws MalformedURLException {
-        this.href = new URL(href);
+    public void setHref(Collection<String> href) throws MalformedURLException {
+        this.href = new URL(href.iterator().next());
     }
 }
