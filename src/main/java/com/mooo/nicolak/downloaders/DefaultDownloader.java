@@ -1,7 +1,5 @@
 package com.mooo.nicolak.downloaders;
 
-import com.mooo.nicolak.Consts;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.*;
@@ -37,11 +35,11 @@ public class DefaultDownloader implements Downloader {
             URLConnection httpConnection = url.openConnection();
             long completeFileSize = httpConnection.getContentLength();
             BufferedInputStream in = new java.io.BufferedInputStream(httpConnection.getInputStream());
-            byte[] buff = new byte[Consts.MB_IN_BYTES];
+            byte[] buff = new byte[Units.MB_IN_BYTES];
             long downloadedFileSize = 0;
             int x;
             long start = System.currentTimeMillis();
-            while ((x = in.read(buff, 0, Consts.MB_IN_BYTES)) >= 0) {
+            while ((x = in.read(buff, 0, Units.MB_IN_BYTES)) >= 0) {
                 downloadedFileSize += x;
                 countBytes(x);
             }
@@ -81,7 +79,7 @@ public class DefaultDownloader implements Downloader {
     }
 
     private long bytesToMB(long bytes) {
-     return (long) ((float)bytes / (float)Consts.MB_IN_BYTES);
+     return (long) ((float)bytes / (float) Units.MB_IN_BYTES);
     }
 
 

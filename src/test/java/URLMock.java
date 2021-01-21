@@ -1,4 +1,4 @@
-import com.mooo.nicolak.Consts;
+import com.mooo.nicolak.downloaders.Units;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class URLMock {
 
         @Override
         public int getContentLength() {
-            return 3 * Consts.MB_IN_BYTES;
+            return 3 * Units.MB_IN_BYTES;
         }
     }
 

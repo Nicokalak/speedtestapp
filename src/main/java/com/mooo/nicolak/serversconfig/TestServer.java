@@ -1,4 +1,4 @@
-package com.mooo.nicolak;
+package com.mooo.nicolak.serversconfig;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -7,7 +7,7 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
-public class testServer {
+public class TestServer {
     private String url = "";
     private Double lat = 0.0;
     private Double lon = 0.0;
@@ -19,7 +19,7 @@ public class testServer {
     private String host = "";
     private Boolean debug = false;
 
-    testServer(String url, String host) {
+    public TestServer(String url, String host) {
         this.url = url;
         this.host = host;
     }
@@ -96,7 +96,7 @@ public class testServer {
         this.host = host;
     }
 
-    public TestResult testServerTTL() {
+    public RTTTestResult testServerTTL() {
         String[] result  = getHost().split(":");
         String server = result[0];
         Integer port = Integer.parseInt(result[1]);
@@ -109,14 +109,14 @@ public class testServer {
             } catch (SocketTimeoutException e) {
                 if (debug)
                     System.out.println("Host timeout " + server);
-                return new TestResult(Long.MAX_VALUE, this);
+                return new RTTTestResult(Long.MAX_VALUE, this);
             } catch (UnknownHostException e){
                 if (debug)
                 System.out.println("Host not found " + server);
-                return new TestResult(Long.MAX_VALUE, this);
+                return new RTTTestResult(Long.MAX_VALUE, this);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
-                return new TestResult(Long.MAX_VALUE, this);
+                return new RTTTestResult(Long.MAX_VALUE, this);
             }
             Long end = System.currentTimeMillis();
             delta = end - start;
@@ -128,14 +128,14 @@ public class testServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return new TestResult(delta, this);
+        return new RTTTestResult(delta, this);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        testServer that = (testServer) o;
+        TestServer that = (TestServer) o;
         return Objects.equals(id, that.id) && Objects.equals(host, that.host);
     }
 
@@ -144,21 +144,24 @@ public class testServer {
         return Objects.hash(id, host);
     }
 
-    class TestResult implements Comparable<TestResult> {
-        private long time;
-        private testServer server;
+    /***
+     * holds Round Trip Time to server
+     */
+    public static class RTTTestResult implements Comparable<RTTTestResult> {
+        private final long time;
+        private final TestServer server;
 
-        public testServer getServer() {
+        public TestServer getServer() {
             return server;
         }
 
-        public TestResult(long time, testServer server) {
+        public RTTTestResult(long time, TestServer server) {
             this.time = time;
             this.server = server;
         }
 
         @Override
-        public int compareTo(TestResult o) {
+        public int compareTo(RTTTestResult o) {
             if (o == null) {
                 return Integer.MAX_VALUE;
             }
@@ -169,7 +172,7 @@ public class testServer {
         public boolean equals(Object o) {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
-            TestResult that = (TestResult) o;
+            RTTTestResult that = (RTTTestResult) o;
             return Objects.equals(server, that.server);
         }
 

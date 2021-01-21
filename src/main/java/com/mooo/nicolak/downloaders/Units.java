@@ -1,6 +1,6 @@
-package com.mooo.nicolak;
+package com.mooo.nicolak.downloaders;
 
-public interface Consts {
+public interface Units {
     int KB_IN_BYTES = 1024;
     int MB_IN_BYTES = 1024* KB_IN_BYTES;
 

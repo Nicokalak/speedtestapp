@@ -3,6 +3,8 @@ package com.mooo.nicolak;
 import com.mooo.nicolak.downloaders.DefaultDownloader;
 import com.mooo.nicolak.downloaders.Downloader;
 import com.mooo.nicolak.downloaders.MultiDownloader;
+import com.mooo.nicolak.serversconfig.TestServer;
+import com.mooo.nicolak.serversconfig.UrlConfig;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 
@@ -29,17 +31,18 @@ public class App {
 
             if (line.hasOption("p")) {
                 downloader = new MultiDownloader();
-                List<testServer> serversConfig = new UrlConfig().getServerConfiguration();
+                List<TestServer> serversConfig = new UrlConfig().getServerConfiguration();
 
-                SortedSet<testServer.TestResult> ttlResults = new TreeSet<>();
+                SortedSet<TestServer.RTTTestResult> rrtResults = new TreeSet<>();
+                System.out.println("searching for the Server...");
                 serversConfig.parallelStream().forEach((val) -> {
-                    testServer.TestResult res = val.testServerTTL();
-                    synchronized (ttlResults) {
-                        ttlResults.add(res);
+                    TestServer.RTTTestResult res = val.testServerTTL();
+                    synchronized (rrtResults) {
+                        rrtResults.add(res);
                     }
                 });
 
-                testServer bestServer = ttlResults.first().getServer();
+                TestServer bestServer = rrtResults.first().getServer();
                 Collection<String> URLs = new ArrayList<>();
 
                 for (UrlConfig.UrlPaths urlPath : UrlConfig.UrlPaths.values()) {

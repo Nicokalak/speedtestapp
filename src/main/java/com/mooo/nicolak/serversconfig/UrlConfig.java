@@ -1,4 +1,4 @@
-package com.mooo.nicolak;
+package com.mooo.nicolak.serversconfig;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -8,7 +8,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.*;
-
+//TODO change XML parser to XMLMapper
 public class UrlConfig {
     private String confUrl;
     private String servers;
@@ -42,7 +42,7 @@ public class UrlConfig {
     }
 
 
-    public List<testServer> getServerConfiguration() throws Exception {
+    public List<TestServer> getServerConfiguration() throws Exception {
         Element docRootConfig = getElement(readXmlConfiguration(confUrl));
         docRootConfig.getElementsByTagName("server-config").item(0).getAttributes().item(1).getTextContent();
         Element serverconfig = getChild(docRootConfig, "server-config");
@@ -52,8 +52,8 @@ public class UrlConfig {
     }
 
 
-    private List<testServer> getTestServersMap(Element docRootServers, Map ignoreIdsMap) {
-        List<testServer> retMap = new ArrayList<>();
+    private List<TestServer> getTestServersMap(Element docRootServers, Map ignoreIdsMap) {
+        List<TestServer> retMap = new ArrayList<>();
         if (docRootServers == null || ignoreIdsMap == null)
             return retMap;
 
@@ -70,7 +70,7 @@ public class UrlConfig {
             }
             String url = ((Attr) n.getNamedItem("url")).getValue();
             String host = ((Attr) n.getNamedItem("host")).getValue();
-            retMap.add(new testServer(url, host));
+            retMap.add(new TestServer(url, host));
         }
         return retMap;
     }

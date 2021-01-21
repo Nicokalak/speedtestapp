@@ -1,7 +1,6 @@
 package com.mooo.nicolak.downloaders;
 
-import com.mooo.nicolak.UrlConfig;
-import com.mooo.nicolak.testServer;
+import com.mooo.nicolak.serversconfig.UrlConfig;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -9,7 +8,6 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class MultiDownloader implements Downloader{
