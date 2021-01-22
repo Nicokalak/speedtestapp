@@ -86,7 +86,7 @@ public class URLMock {
                 firstReadTime = System.currentTimeMillis();
             } else {
                 //don`t read for Sec
-                if (System.currentTimeMillis() - firstReadTime <= 1000L) {
+                if (System.currentTimeMillis() - firstReadTime <= 1500L) {
                     return 0;
                 }
             }

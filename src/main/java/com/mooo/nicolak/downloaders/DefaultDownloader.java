@@ -64,7 +64,7 @@ public class DefaultDownloader implements Downloader {
 
     @Override
     public String toString() {
-        return String.format("Downloaded %sMB from %s in %.2f seconds in %.2f MB/s, status = %s",
+        return String.format("Downloaded from %s total: %d in %.2f seconds in %.2f MB/s, status = %s",
                 href,
                 totalMB,
                 totalTimeSec,
