@@ -6,7 +6,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO change XML parser to XMLMapper
 public class UrlConfig {
     private String confUrl;
     private String servers;
@@ -48,13 +47,14 @@ public class UrlConfig {
 
         UrlConfigXmlDef.xmlServers serversMap = xmlMapper.readValue(new URL(servers), UrlConfigXmlDef.xmlServers.class);
         return serversMap.getServers().stream().filter(
-                server -> ignoreIdsMap.containsKey(server.getId()) == false).
+                server -> !ignoreIdsMap.containsKey(server.getId())).
                 collect(Collectors.toList());
     }
 
     private Map<Integer, Boolean> getIgnoreids (String ignoreidsStr) {
         if (ignoreidsStr == null)
             return null;
+
         Map<Integer, Boolean> ret = new HashMap<Integer, Boolean>(){};
 
         String[] aList = ignoreidsStr.split(",");

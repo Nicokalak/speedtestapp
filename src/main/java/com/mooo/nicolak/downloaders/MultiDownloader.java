@@ -5,20 +5,27 @@ import com.mooo.nicolak.serversconfig.UrlConfig;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class MultiDownloader implements Downloader{
     private Collection<URL> URLs;
     private final Collection<Downloader> downloaders = new ArrayList<>();
+    private final int NumUrlThreads = 4;
+    private final int NumThreads = 4;
+
     @Override
     public void run() {
         URLs.forEach((url) -> {
-            downloaders.add(new DefaultDownloader(url));
+            IntStream.range(0, NumUrlThreads).forEach(i ->{
+                downloaders.add(new DefaultDownloader(url));
+            });
         });
-        ExecutorService executor = Executors.newFixedThreadPool(UrlConfig.UrlPaths.values().length);
+        ExecutorService executor = Executors.newFixedThreadPool(NumThreads);
         downloaders.forEach(executor::submit);
         executor.shutdown();
         try {
@@ -26,11 +33,6 @@ public class MultiDownloader implements Downloader{
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public Double getMBPerSec() {
-        return downloaders.stream().mapToDouble((downloader) -> downloader.getMBPerSec()).average().orElse(0.0);
     }
 
     @Override
@@ -57,5 +59,21 @@ public class MultiDownloader implements Downloader{
                 URLs.size(),
                 getMBPerSec(),
                 (getDownloadStatus() == RUN_OK ?  "ok" : "incomplete"));
+    }
+
+    public Map<Long, Long> getSpeedStat() {
+        Map<Long, Long> statmap = new ConcurrentHashMap<>();
+        for (Downloader downloader : downloaders) {
+            for (Map.Entry<Long, Long> entry : downloader.getSpeedStat().entrySet()) {
+                Long key = entry.getKey();
+                Long value = entry.getValue();
+                if (statmap.containsKey(key)) {
+                    statmap.put(key, statmap.get(key) + value);
+                } else {
+                    statmap.put(key, value);
+                }
+            }
+        }
+        return statmap;
     }
 }

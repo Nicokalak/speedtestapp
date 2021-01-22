@@ -44,7 +44,7 @@ public class DefaultDownloader implements Downloader {
                 countBytes(x);
             }
             totalTimeSec = ((double)(System.currentTimeMillis() - start))/ 1000.00;
-            totalMB = bytesToMB(downloadedFileSize);
+            totalMB = Units.bytesToMB(downloadedFileSize);
             in.close();
             this.downloadStatus = RUN_OK;
         } catch (IOException e) {
@@ -63,12 +63,6 @@ public class DefaultDownloader implements Downloader {
     }
 
     @Override
-    public Double getMBPerSec() {
-        OptionalDouble average = speed.values().stream().mapToLong(this::bytesToMB).average();
-        return average.orElse(0);
-    }
-
-    @Override
     public String toString() {
         return String.format("Downloaded %sMB from %s in %.2f seconds in %.2f MB/s, status = %s",
                 href,
@@ -78,11 +72,6 @@ public class DefaultDownloader implements Downloader {
                 (downloadStatus == RUN_OK ?  "ok" : "incomplete"));
     }
 
-    private long bytesToMB(long bytes) {
-     return (long) ((float)bytes / (float) Units.MB_IN_BYTES);
-    }
-
-
     @Override
     public int getDownloadStatus() {
         return downloadStatus;
@@ -91,5 +80,10 @@ public class DefaultDownloader implements Downloader {
     @Override
     public void setHref(Collection<String> href) throws MalformedURLException {
         this.href = new URL(href.iterator().next());
+    }
+
+    @Override
+    public Map<Long, Long> getSpeedStat() {
+        return speed;
     }
 }
