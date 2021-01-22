@@ -2,7 +2,6 @@ package com.mooo.nicolak.serversconfig;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mooo.nicolak.test3;
 
 import java.util.ArrayList;
 import java.util.List;
