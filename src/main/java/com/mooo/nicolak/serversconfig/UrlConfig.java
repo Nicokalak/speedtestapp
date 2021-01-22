@@ -1,8 +1,6 @@
 package com.mooo.nicolak.serversconfig;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.mooo.nicolak.test3;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -53,7 +51,7 @@ public class UrlConfig {
         XmlMapper xmlMapper = new XmlMapper();
         UrlConfigXmlDef.ConfigXML configXML = xmlMapper.readValue(new URL(confUrl), UrlConfigXmlDef.ConfigXML.class);
         Map<Integer, Boolean> ignoreIdsMap = getIgnoreids(configXML.getServerConfig().getIgnoreids());
-        
+
         UrlConfigXmlDef.xmlServers serversMap = xmlMapper.readValue(new URL(servers), UrlConfigXmlDef.xmlServers.class);
         return serversMap.getServers().stream().filter(
                 server -> ignoreIdsMap.containsKey(server.getId()) == false).
