@@ -1,5 +1,8 @@
 package com.mooo.nicolak.serversconfig;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.mooo.nicolak.test3;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -7,13 +10,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
+
 //TODO change XML parser to XMLMapper
 public class UrlConfig {
     private String confUrl;
     private String servers;
 
     public enum UrlPaths {
+        x1000("http://%s/speedtest/random1000x1000.jpg?x=%d"),
         x2000("http://%s/speedtest/random2000x2000.jpg?x=%d"),
         x2500("http://%s/speedtest/random2500x2500.jpg?x=%d"),
         x3000("http://%s/speedtest/random3000x3000.jpg?x=%d"),
@@ -28,6 +35,15 @@ public class UrlConfig {
 
         public String getUrl(String host) {
             return String.format(pattern, host, System.currentTimeMillis());
+        }
+    }
+
+    public static class xmlServers {
+        @JsonProperty("servers")
+        List<TestServer> servers = new ArrayList<>();
+
+        public List<TestServer> getServers() {
+            return servers;
         }
     }
 
@@ -48,32 +64,14 @@ public class UrlConfig {
         Element serverconfig = getChild(docRootConfig, "server-config");
         Map<Integer, Boolean> ignoreIdsMap = getIgnoreids(serverconfig);
         Element docRootServers = getElement(readXmlConfiguration(servers));
-        return getTestServersMap(docRootServers, ignoreIdsMap);
+        XmlMapper xmlMapper = new XmlMapper();
+        xmlServers serversMap = xmlMapper.readValue(new URL(servers), xmlServers.class);
+        return serversMap.getServers().stream().filter(
+                server -> ignoreIdsMap.containsKey(server.getId()) == false).
+                collect(Collectors.toList());
     }
 
 
-    private List<TestServer> getTestServersMap(Element docRootServers, Map ignoreIdsMap) {
-        List<TestServer> retMap = new ArrayList<>();
-        if (docRootServers == null || ignoreIdsMap == null)
-            return retMap;
-
-        NodeList children = docRootServers.getElementsByTagName("servers").item(0).getChildNodes();
-        for(int i = 0; i < children.getLength(); i++) {
-            if (children.item(i) instanceof Element == false)
-                continue;
-            NamedNodeMap n = children.item(i).getAttributes();
-            String idString = ((Attr) n.getNamedItem("id")).getValue();
-            Integer id = Integer.parseInt(idString);
-            if (ignoreIdsMap.containsKey(id)) {
-                System.out.println("Ignored id " + id);
-                continue;
-            }
-            String url = ((Attr) n.getNamedItem("url")).getValue();
-            String host = ((Attr) n.getNamedItem("host")).getValue();
-            retMap.add(new TestServer(url, host));
-        }
-        return retMap;
-    }
     /*
         Expects to have server config
      */
