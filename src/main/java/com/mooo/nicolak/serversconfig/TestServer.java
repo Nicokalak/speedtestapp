@@ -8,16 +8,20 @@ import java.net.UnknownHostException;
 import java.util.Objects;
 
 public class TestServer {
-    private String url = "";
-    private Double lat = 0.0;
-    private Double lon = 0.0;
-    private String name = "Name not defined";
-    private String country = "Country not defined";
-    private String cc = "CC not defined";
-    private String sponsor = "No sponsor";
-    private Integer id = 0;
-    private String host = "";
+    private String url;
+    private Double lat;
+    private Double lon;
+    private String name;
+    private String country;
+    private String cc;
+    private String sponsor;
+    private Integer id;
+    private String host;
     private Boolean debug = false;
+
+    public TestServer() {
+
+    }
 
     public TestServer(String url, String host) {
         this.url = url;

@@ -38,15 +38,6 @@ public class UrlConfig {
         }
     }
 
-    public static class xmlServers {
-        @JsonProperty("servers")
-        List<TestServer> servers = new ArrayList<>();
-
-        public List<TestServer> getServers() {
-            return servers;
-        }
-    }
-
     public UrlConfig() {
         confUrl = "https://www.speedtest.net/speedtest-config.php";
         servers = "http://c.speedtest.net/speedtest-servers-static.php";
@@ -59,27 +50,21 @@ public class UrlConfig {
 
 
     public List<TestServer> getServerConfiguration() throws Exception {
-        Element docRootConfig = getElement(readXmlConfiguration(confUrl));
-        docRootConfig.getElementsByTagName("server-config").item(0).getAttributes().item(1).getTextContent();
-        Element serverconfig = getChild(docRootConfig, "server-config");
-        Map<Integer, Boolean> ignoreIdsMap = getIgnoreids(serverconfig);
-        Element docRootServers = getElement(readXmlConfiguration(servers));
         XmlMapper xmlMapper = new XmlMapper();
-        xmlServers serversMap = xmlMapper.readValue(new URL(servers), xmlServers.class);
+        UrlConfigXmlDef.ConfigXML configXML = xmlMapper.readValue(new URL(confUrl), UrlConfigXmlDef.ConfigXML.class);
+        Map<Integer, Boolean> ignoreIdsMap = getIgnoreids(configXML.getServerConfig().getIgnoreids());
+        
+        UrlConfigXmlDef.xmlServers serversMap = xmlMapper.readValue(new URL(servers), UrlConfigXmlDef.xmlServers.class);
         return serversMap.getServers().stream().filter(
                 server -> ignoreIdsMap.containsKey(server.getId()) == false).
                 collect(Collectors.toList());
     }
 
-
-    /*
-        Expects to have server config
-     */
-    private Map<Integer, Boolean> getIgnoreids (Element element) {
-        Map<Integer, Boolean> ret = new HashMap<Integer, Boolean>(){};
-        if (element == null)
+    private Map<Integer, Boolean> getIgnoreids (String ignoreidsStr) {
+        if (ignoreidsStr == null)
             return null;
-        String ignoreidsStr = element.getAttribute("ignoreids");
+        Map<Integer, Boolean> ret = new HashMap<Integer, Boolean>(){};
+
         String[] aList = ignoreidsStr.split(",");
         Arrays.stream(aList).forEach(str -> {
             ret.put(Integer.parseInt(str), true);
