@@ -1,6 +1,9 @@
 package com.mooo.nicolak.downloaders;
 
 import java.net.MalformedURLException;
+import java.util.Collection;
+import java.util.Map;
+import java.util.OptionalDouble;
 
 public interface Downloader extends Runnable {
     int RUN_OK = 0;
@@ -10,9 +13,14 @@ public interface Downloader extends Runnable {
     @Override
     void run();
 
-    Double getMBPerSec();
+    default Double getMBPerSec() {
+        OptionalDouble average = getSpeedStat().values().stream().mapToLong(Units::bytesToMB).average();
+        return average.orElse(0);
+    }
 
     int getDownloadStatus();
 
-    void setHref(String href) throws MalformedURLException;
+    void setHref(Collection<String> href) throws MalformedURLException;
+
+    Map<Long, Long> getSpeedStat();
 }
