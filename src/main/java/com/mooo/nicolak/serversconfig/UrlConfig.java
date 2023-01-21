@@ -1,5 +1,6 @@
 package com.mooo.nicolak.serversconfig;
 
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import java.net.URL;
@@ -7,8 +8,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class UrlConfig {
-    private String confUrl;
-    private String servers;
+    private final String confUrl;
+    private final String servers;
 
     public enum UrlPaths {
         x1000("http://%s/speedtest/random1000x1000.jpg?x=%d"),
@@ -18,7 +19,7 @@ public class UrlConfig {
         x3500("http://%s/speedtest/random3500x3500.jpg?x=%d"),
         x4000("http://%s/speedtest/random4000x4000.jpg?x=%d");
 
-        String pattern;
+        final String pattern;
 
         UrlPaths(String s) {
             pattern = s;
@@ -55,12 +56,11 @@ public class UrlConfig {
         if (ignoreidsStr == null)
             return null;
 
-        Map<Integer, Boolean> ret = new HashMap<Integer, Boolean>(){};
+        Map<Integer, Boolean> ret = new HashMap<>() {
+        };
 
         String[] aList = ignoreidsStr.split(",");
-        Arrays.stream(aList).forEach(str -> {
-            ret.put(Integer.parseInt(str), true);
-        });
+        Arrays.stream(aList).forEach(str -> ret.put(Integer.parseInt(str), true));
 
         return ret;
     }
